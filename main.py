@@ -13,12 +13,12 @@ from flask_gravatar import Gravatar
 
 PASSWORD = 'password'
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
+app.config['SECRET_KEY'] = '8BYkEfBA836donzWlSihBXox4C0sKR8b'
 ckeditor = CKEditor(app)
 Bootstrap(app)
 gravatar = Gravatar(app, size=100, rating='g', default='retro', force_default=False, force_lower=False, use_ssl=False, base_url=None)
 
-##CONNECT TO DB
+##CONNECT TO DATABASE
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -83,13 +83,11 @@ def get_all_posts():
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
-
         if User.query.filter_by(email=form.email.data).first():
             print(User.query.filter_by(email=form.email.data).first())
             #User already exists
             flash("You've already signed up with that email, log in instead!")
             return redirect(url_for('login'))
-
         hash_and_salted_password = generate_password_hash(
             form.password.data,
             method='pbkdf2:sha256',
@@ -104,7 +102,6 @@ def register():
         db.session.commit()
         login_user(new_user)
         return redirect(url_for("get_all_posts"))
-
     return render_template("register.html", form=form, current_user=current_user)
 
 
@@ -114,7 +111,6 @@ def login():
     if form.validate_on_submit():
         email = form.email.data
         password = form.password.data
-
         user = User.query.filter_by(email=email).first()
         # Email doesn't exist or password incorrect.
         if not user:
@@ -139,12 +135,10 @@ def logout():
 def show_post(post_id):
     form = CommentForm()
     requested_post = BlogPost.query.get(post_id)
-
     if form.validate_on_submit():
         if not current_user.is_authenticated:
             flash("You need to login or register to comment.")
             return redirect(url_for("login"))
-
         new_comment = Comment(
             text=form.comment_text.data,
             comment_author=current_user,
@@ -152,7 +146,6 @@ def show_post(post_id):
         )
         db.session.add(new_comment)
         db.session.commit()
-
     return render_template("post.html", post=requested_post, form=form, current_user=current_user)
 
 
@@ -199,7 +192,6 @@ def add_new_post():
         db.session.add(new_post)
         db.session.commit()
         return redirect(url_for("get_all_posts"))
-
     return render_template("make-post.html", form=form, current_user=current_user)
 
 
@@ -221,7 +213,6 @@ def edit_post(post_id):
         post.body = edit_form.body.data
         db.session.commit()
         return redirect(url_for("show_post", post_id=post.id))
-
     return render_template("make-post.html", form=edit_form, is_edit=True, current_user=current_user)
 
 
