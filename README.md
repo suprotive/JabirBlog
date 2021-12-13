@@ -1,3 +1,0 @@
-# JabirBlog
-Simple Blog
-
